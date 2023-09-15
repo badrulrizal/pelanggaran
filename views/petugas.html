@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+<!--  -->
+{% block content %}
+<h3>Data Petugas</h3>
+<a href="javascript:add()" class="btn btn-sm btn-primary">Tambah Petugas</a>
+<hr>
+<input type="text" data-kt-filemanager-table-filter="search" class="form-control border ps-15" style="width: 250px;right: 0;position: absolute;margin-right: 20px;" placeholder="Search Data" />
+<br><br>
+<div class="table-responsive text-nowrap">
+    <table class="table" id="tbl">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nuptk</th>
+                <th>Nama Petugas</th>
+                <th>Tanggal Lahir</th>
+                <th>Nomer HP</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<!--  -->
+{% include "modal/mpetugas.html" %}
+<!--  -->
+<script>
+    $(function() {
+        $('#tgl').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+
+        tbl = $('#tbl').DataTable({
+            "ajax": {
+                url: "vpetugas",
+                type: "post",
+            },
+            destroy: true,
+            responsive: true,
+            "aLengthMenu": [
+                [10, 25, 50, 500, -1],
+                [10, 25, 50, 500, "All"]
+            ],
+            "iDisplayLength": 10,
+            "language": {
+                search: "",
+                searchPlaceholder: "Search Data"
+            },
+        });
+        document.querySelector('[data-kt-filemanager-table-filter="search"]').addEventListener("keyup",
+            (
+                function(t) {
+                    tbl.search(t.target.value).draw()
+                }));
+        $('#bsave').click(function(e) {
+            e.preventDefault();
+            var form = $('#form');
+            if (form[0].checkValidity() === false) {
+                form.addClass('was-validated');
+            } else {
+                form.removeClass('was-validated');
+                data = form.serialize();
+                tgl = $('#tgl').val().split("/");
+                data += "&tanggal_lahir=" + tgl[2] + "-" + tgl[1] + "-" + tgl[0];
+                console.log(data);
+                Swal.fire({
+                    title: 'Please Wait!',
+                    icon: 'info',
+                    text: 'Loading.........',
+                    buttonsStyling: !1,
+                    confirmButtonText: "Selesai",
+                    customClass: {
+                        confirmButton: "btn btn-info"
+                    }
+                });
+                $.post('svpetugas', data, function(res) {
+                    Swal.close();
+                    if (res.success == 1) {
+                        pesan('success', res.message);
+                        tbl.ajax.reload(null, false);
+                        $('#modal').modal('hide');
+                    } else {
+                        pesan('error', res.message);
+                    }
+                }, 'json')
+            }
+        })
+    });
+
+    function add() {
+        $('#modal').modal('show');
+        $('#form')[0].reset();
+        $('#tgl').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+    }
+
+    function detail(id) {
+        $('#id').val(id)
+        $('#modal').modal('show');
+        $.post('dpetugas', {
+            'id': id
+        }, function(res) {
+            $('#nama').val(res.data[0].nama);
+            $('#nuptk').val(res.data[0].nuptk);
+            $('#tgl').val(res.data[0].tanggal);
+            $('#nomor').val(res.data[0].kontak);
+            $('#username').val(res.data[0].username);
+            $('#password').val(res.data[0].password);
+        }, 'json');
+    }
+
+    function hapus(id) {
+        Swal.fire({
+            title: "konfimasi?",
+            text: "Apakah mau menghapus data ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!"
+        }).then(function(result) {
+            if (result.value) {
+                $.post('hpetugas', {
+                    'id': id
+                }, function(res) {
+                    if (res.success == 1) {
+                        pesan('success', res.message);
+                        tbl.ajax.reload(null, false);
+                    } else {
+                        pesan('error', res.message)
+                    }
+                }, 'json')
+            }
+        });
+    }
+</script>
+
+{% endblock %}

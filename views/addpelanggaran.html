@@ -1,0 +1,274 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>App Punisment</title>
+    <meta name="description" content="" />
+    <link rel="icon" type="image/x-icon" href="static/img/favicon/favicon.ico" />
+    <link rel="stylesheet" href="{% static 'vendor/fonts/boxicon.css' %}" />
+    <link rel="stylesheet" href="{% static 'vendor/css/cores.css' %}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{% static 'vendor/css/theme-default.css' %}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{% static 'vendor/libs/perfect-scrollbar/perfect-scrollbar.css' %}" />
+    <!-- <link rel="stylesheet" href="{% static 'vendor/libs/apex-charts/apex-charts.css' %}" /> -->
+    <link rel="stylesheet" href="{% static 'vendor/toastr/toastr.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/demo.css' %}" />
+    <link rel="stylesheet" href="{% static 'datatables/datatables.bundle.css' %}" />
+    <link rel="stylesheet" href="{% static 'sweetalert2/sweetalert2.min.css' %}" />
+    <link href="{% static 'vendor/datepicker/bootstrap-datepicker.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'vendor/time/jquery.timepicker.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'select2/select2.min.css' %}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{% static 'vendor/apex-charts/apex-charts.css' %}" type="text/css" />
+
+
+
+    <script src="{% static 'vendor/libs/jquery/jquery.js' %}"></script>
+    <script src="{% static 'vendor/libs/popper/popper.js' %}"></script>
+    <script src="{% static 'vendor/js/bootstrap.js' %}"></script>
+    <script src="{% static 'vendor/libs/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'vendor/js/menu.js' %}"></script>
+    <script src="{% static 'config.js' %}"></script>
+    <script src="{% static 'vendor/toastr/toastr.min.js' %}"></script>
+    <script src="{% static 'vendor/js/toastr.js' %}"></script>
+    <script src="{% static 'vendor/js/helpers.js' %}"></script>
+    <script src="{% static 'datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'vendor/datepicker/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'vendor/time/jquery.timepicker.min.js'%}"></script>
+    <script src="{% static 'select2/select2.min.js' %}"></script>
+    <script src="{% static 'vendor/apex-charts/apexcharts.js' %}"></script>
+    <script src="{% static 'dashboards-analytics.js' %}"></script>
+    <style>
+        .border {
+            border-style: solid;
+            border-width: 1px;
+            border-color: #0095E8 !important;
+        }
+        
+        .border-color {
+            border: #0095E8 1px solid !important;
+        }
+    </style>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
+</head>
+
+<div class="container-xxl">
+    <div class="card" style="margin-top: 20px;width: 100%;height: 100%;">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="{% static 'img/siswa.png' %}" alt="" height="200">
+                                </div>
+                                <div class="col-md-8">
+                                    <table style="margin-left:20px;margin-top: 0px;">
+                                        <tr>
+                                            <td><b>Nomor Induk</b></td>
+                                            <td>:</td>
+                                            <td>{{nomor}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Nama Siswa</b></td>
+                                            <td>:</td>
+                                            <td>{{nama}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Tanggal Lahir</b></td>
+                                            <td>:</td>
+                                            <td>{{tgl}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Kelas</b></td>
+                                            <td>:</td>
+                                            <td>{{kelas}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Jurusan</b></td>
+                                            <td>:</td>
+                                            <td>{{jurusan}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Total Point Pelanggaran</b></td>
+                                            <td>:</td>
+                                            <td> {{point}}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class='bx bx-receipt'></i> Pengajuan Pelanggaran</h5>
+                            <hr>
+                            <form id="form" autocomplete="off">
+                                <input type="text" hidden id="id" name="id" value="" hidden>
+                                <input type="text" name="siswa_id" id="siswa" value="{{id}}" hidden>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="fv-row">
+                                            <!--begin::Email-->
+                                            <label class="required fw-semibold fs-6 mb-2">Pelanggaran</label>
+                                            <select name="pelanggaran_id" id="pelanggaran" class="form-control border" style="width: 100%;">
+                                                </select>
+                                            <!--end::Email-->
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="fv-row">
+                                            <!--begin::Email-->
+                                            <label class="required fw-semibold fs-6 mb-2">Tanggal Pelanggaran</label>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <input type="text" placeholder="Tanggal Pelanggaran" name="tgl" id="tgl" class="form-control border" required/>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <input type="text" placeholder="Jam Pelanggaran" name="jam" id="jam" class="form-control border" required/>
+                                                </div>
+                                            </div>
+                                            <!--end::Email-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="bsave"><i class='bx bx-send' ></i> Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5><i class='bx bx-receipt'></i> Histori Pelanggaran</h5>
+                            <hr>
+                            <input type="text" data-kt-filemanager-table-filter="search" class="form-control border ps-15" style="width: 250px;right: 0;position: absolute;margin-right: 20px;" placeholder="Search Data" />
+                            <br><br>
+                            <div class="table-responsive text-nowrap">
+                                <table class="table" id="tbl">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>No.Induk Siswa</th>
+                                            <th>Nama Siswa</th>
+                                            <th>Kelas</th>
+                                            <th>Pelanggaran</th>
+                                            <th>Point</th>
+                                            <th>Status Pelanggaran</th>
+                                            <th>Total Point Pelanggaran</th>
+                                            <th>Tindakan</th>
+                                            <th>Tanggal Melanggar</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function() {
+        $('#pelanggaran').select2({
+            placeholder: 'Pilih Pelanggaran',
+        });
+        $('#tgl').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+
+        $('#jam').timepicker({
+            'timeFormat': 'H:i'
+        }).timepicker('setTime', new Date());
+        listpelanggaran();
+
+        tbl = $('#tbl').DataTable({
+            "ajax": {
+                url: "../dtlvpelanggaran",
+                type: "post",
+                data: {
+                    'id': '{{id}}'
+                }
+
+            },
+            destroy: true,
+            responsive: true,
+            "aLengthMenu": [
+                [10, 25, 50, 500, -1],
+                [10, 25, 50, 500, "All"]
+            ],
+            "iDisplayLength": 10,
+            "language": {
+                search: "",
+                searchPlaceholder: "Search Data"
+            },
+        });
+        document.querySelector('[data-kt-filemanager-table-filter="search"]').addEventListener("keyup",
+            (
+                function(t) {
+                    tbl.search(t.target.value).draw()
+                }));
+
+        $('#bsave').click(function(e) {
+            e.preventDefault();
+            var form = $('#form');
+            if (form[0].checkValidity() === false) {
+                form.addClass('was-validated');
+            } else {
+                form.removeClass('was-validated');
+                data = form.serialize();
+                tgl = $('#tgl').val().split("/");
+                jam = $('#jam').val() + ":00";
+                data += "&tanggal_pelanggaran=" + tgl[2] + "-" + tgl[1] + "-" + tgl[0] + " " + jam;
+                console.log(data);
+                Swal.fire({
+                    title: 'Please Wait!',
+                    icon: 'info',
+                    text: 'Loading.........',
+                    buttonsStyling: !1,
+                    confirmButtonText: "Selesai",
+                    customClass: {
+                        confirmButton: "btn btn-info"
+                    }
+                });
+                $.post('../svpelanggaran', data, function(res) {
+                    Swal.close();
+                    if (res.success == 1) {
+                        pesan('success', res.message);
+                        tbl.ajax.reload(null, false);
+                        $('#modal').modal('hide');
+                    } else {
+                        pesan('error', res.message);
+                    }
+                }, 'json')
+            }
+        })
+    })
+
+    function listpelanggaran() {
+        $.get('../listpelanggaran', function(res) {
+            $('#pelanggaran').html(res)
+        })
+    }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+<!--  -->
+{% block content %}
+<h3>Data Pelanggaran</h3>
+<a href="javascript:add()" class="btn btn-sm btn-primary">Tambah Pelanggaran</a>
+<hr>
+<input type="text" data-kt-filemanager-table-filter="search" class="form-control border ps-15" style="width: 250px;right: 0;position: absolute;margin-right: 20px;" placeholder="Search Data" />
+<br><br>
+<div class="table-responsive text-nowrap">
+    <table class="table" id="tbl">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>No.Induk Siswa</th>
+                <th>Nama Siswa</th>
+                <th>Kelas</th>
+                <th>Pelanggaran</th>
+                <th>Point</th>
+                <th>Status Pelanggaran</th>
+                <th>Total Point Pelanggaran</th>
+                <th>Tindakan</th>
+                <th>Tanggal Melanggar</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<!--  -->
+{% include "modal/mpelanggaran.html" %}
+<!--  -->
+{% include "modal/mpemanggilan.html" %}
+<!--  -->
+<script>
+    $(function() {
+        $('#pelanggaran').select2({
+            placeholder: 'Pilih Pelanggaran',
+            dropdownParent: $("#modal")
+        });
+
+        $('#siswa').select2({
+            placeholder: 'Pilih Siswa',
+            dropdownParent: $("#modal")
+        });
+        $('#tgl').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+
+        $('#jam').timepicker({
+            'timeFormat': 'H:i'
+        }).timepicker('setTime', new Date());
+        listpelanggaran();
+        listsiswa();
+        tbl = $('#tbl').DataTable({
+            "ajax": {
+                url: "vpelanggaran",
+                type: "post",
+            },
+            destroy: true,
+            responsive: true,
+            "aLengthMenu": [
+                [10, 25, 50, 500, -1],
+                [10, 25, 50, 500, "All"]
+            ],
+            "iDisplayLength": 10,
+            "language": {
+                search: "",
+                searchPlaceholder: "Search Data"
+            },
+        });
+        document.querySelector('[data-kt-filemanager-table-filter="search"]').addEventListener("keyup",
+            (
+                function(t) {
+                    tbl.search(t.target.value).draw()
+                }));
+        $('#bsave').click(function(e) {
+            e.preventDefault();
+            var form = $('#form');
+            if (form[0].checkValidity() === false) {
+                form.addClass('was-validated');
+            } else {
+                form.removeClass('was-validated');
+                data = form.serialize();
+                tgl = $('#tgl').val().split("/");
+                jam = $('#jam').val() + ":00";
+                data += "&tanggal_pelanggaran=" + tgl[2] + "-" + tgl[1] + "-" + tgl[0] + " " + jam;
+                console.log(data);
+                Swal.fire({
+                    title: 'Please Wait!',
+                    icon: 'info',
+                    text: 'Loading.........',
+                    buttonsStyling: !1,
+                    confirmButtonText: "Selesai",
+                    customClass: {
+                        confirmButton: "btn btn-info"
+                    }
+                });
+                $.post('svpelanggaran', data, function(res) {
+                    Swal.close();
+                    if (res.success == 1) {
+                        pesan('success', res.message);
+                        tbl.ajax.reload(null, false);
+                        $('#modal').modal('hide');
+                    } else {
+                        pesan('error', res.message);
+                    }
+                }, 'json')
+            }
+        })
+    });
+
+    function add() {
+        $('#modal').modal('show');
+        $('#form')[0].reset();
+        $('#tgl').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+        $('#jam').timepicker({
+            'timeFormat': 'H:i'
+        }).timepicker('setTime', new Date());
+        listpelanggaran();
+        listsiswa();
+    }
+
+    function listpelanggaran() {
+        $.get('listpelanggaran', function(res) {
+            $('#pelanggaran').html(res)
+        })
+    }
+
+    function listsiswa() {
+        $.get('listsiswa', function(res) {
+            $('#siswa').html(res)
+        })
+    }
+
+    function detail(id) {
+        $('#id').val(id)
+        $('#modal').modal('show');
+        $.post('dpelanggaran', {
+            'id': id
+        }, function(res) {
+            $('#pelanggaran').val(res.data[0].pelanggaran).trigger('change');
+            $('#siswa').val(res.data[0].siswa).trigger('change');
+            $('#tgl').datepicker('setDate', new Date(res.data[0].tgl));
+            $('#jam').timepicker('setTime', res.data[0].jam);
+        }, 'json');
+    }
+
+    function hapus(id) {
+        Swal.fire({
+            title: "konfimasi?",
+            text: "Apakah mau menghapus data ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!"
+        }).then(function(result) {
+            if (result.value) {
+                $.post('hpelanggaran', {
+                    'id': id
+                }, function(res) {
+                    if (res.success == 1) {
+                        pesan('success', res.message);
+                        tbl.ajax.reload(null, false);
+                    } else {
+                        pesan('error', res.message)
+                    }
+                }, 'json')
+            }
+        });
+    }
+
+    function pemanggilan(siswa) {
+        $('#mpanggil').modal('show');
+        $('#tglpanggil').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+
+        $('#jampanggil').timepicker({
+            'timeFormat': 'H:i'
+        }).timepicker('setTime', new Date());
+        $('#bcetak').click(function(e) {
+            e.preventDefault();
+            tgl = $('#tglpanggil').val().split("/");
+            jam = $('#jampanggil').val() + ":00";
+            data = "&tgl=" + tgl[2] + "-" + tgl[1] + "-" + tgl[0] + " " + jam;
+            window.open('pemanggilan?siswa=' + siswa + data, '_blank')
+            $('#mpanggil').modal('hide');
+        })
+
+    }
+
+    function pengeluaran(siswa) {
+        window.open('pengeluaran?siswa=' + siswa, '_blank')
+    }
+</script>
+
+{% endblock %}

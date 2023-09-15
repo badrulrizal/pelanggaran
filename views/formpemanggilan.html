@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <link rel="stylesheet" href="{% static 'vendor/css/cores.css' %}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{% static 'vendor/css/theme-default.css' %}" class="template-customizer-theme-css" />
+    <style>
+        * {
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td style="width: 100px;">
+                <img src="static/logo.jpeg" height="100" alt="">
+            </td>
+            <td style="text-align: center;">
+                <b style="font-size: xxx-large;margin-left: -20px;">PONDOK PESANTREN NURUL JADID</b><br>
+                <b style="margin-top: -90px;font-size: x-large;">SEKOLAH MENENGAH KEJURUAN NURUL JADID</b><br>
+                <b style="margin-top: -90px;font-size: medium;">Jl. Kyai Haji Zaini Mun'im, Karanganyar, Paiton - Probolinggo, Telp. (0335) 774585</b>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table>
+        <tr>
+            <td style="width: 60;">Nomor</td>
+            <td style="width: 10;">:</td>
+            <td>...../SMK.NJ/{{romawi}}/{{tahun}}</td>
+        </tr>
+        <tr>
+            <td>Lampiran</td>
+            <td>:</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Hal</td>
+            <td>:</td>
+            <td>Pemanggilan Wali Murid Kesekolah</td>
+        </tr>
+    </table>
+    <br><br>
+    <div>Kepada Yth.</div>
+    <div><b>Bapak/Ibu Orangtua/Wali Murid</b></div>
+    <div style="margin-left: 50px;">Di -</div>
+    <div style="margin-left: 100px;">Tempat</div><br>
+    <div style="margin-left: 50px;">Assalamualaikum Wr. Wb.</div><br>
+    <!--  -->
+    {% for v in siswa%}
+    <div style="margin-left: 50px;">Bersama surat ini, kami pihak sekolah mengharap kehadiran Bapak/Ibu/Wali Murid dari <b>{{v.nama_lengkap}}</b> Kelas <b>{{v.kelas}}</b> pada :</div><br>
+    <!--  -->
+    {%endfor%}
+    <table style="margin-left: 50px;">
+        <tr>
+            <td style="width: 60;">Tanggal</td>
+            <td style="width: 10;">:</td>
+            <td>{{tgl}}</td>
+        </tr>
+        <tr>
+            <td>Jam</td>
+            <td>:</td>
+            <td>{{jam}}</td>
+        </tr>
+        <tr>
+            <td>Tempat</td>
+            <td>:</td>
+            <td>Kantor SMKNJ</td>
+        </tr>
+    </table>
+    <br>
+    <div style="margin-left: 50px;">Mengingat pentingnya hal tersebut, kehadiran Bapak/Ibu/Wali Murid sangat kami harapkan.
+    </div>
+    <div style="margin-left: 50px;">Demikian,dan atas kerjasamanya kami sampaikan terima kasih.</div><br>
+    <div style="margin-left: 50px;">Wassalamu’alaikum Wr.Wb</div><br>
+    <div style="margin-left: 450px;">Probolinggo, {{tgl1}}</div>
+    <div style="margin-left: 450px;">Kepala Madrasah</div><br><br><br><br>
+    <div style="margin-left: 450px;">..........................................</div>
+</body>
+
+</html>

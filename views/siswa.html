@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+<!--  -->
+{% block content %}
+<h3>Data Siswa</h3>
+<a href="javascript:add()" class="btn btn-sm btn-primary">Tambah Siswa</a>
+<a href="#" data-bs-toggle="modal" data-bs-target="#mimport" class="btn btn-sm btn-secondary">Import Excel</a>
+<hr>
+<input type="text" data-kt-filemanager-table-filter="search" class="form-control border ps-15" style="width: 250px;right: 0;position: absolute;margin-right: 20px;" placeholder="Search Data" />
+<br><br>
+<div class="table-responsive text-nowrap">
+    <table class="table" id="tbl">
+        <thead>
+            <tr>
+
+                <th>No</th>
+                <th>Nomor Induk</th>
+                <th>Nama</th>
+                <th>Tempat Lahir</th>
+                <th>Tanggal Lahir</th>
+                <th>Jenis Kelamin</th>
+                <th>Alamat</th>
+                <th>Jurusan</th>
+                <th>Kelas</th>
+                <th>QR Code</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<!--  -->
+{% include "modal/msiswa.html" %}
+<!--  -->
+{% include "modal/mimport.html" %}
+<!--  -->
+<script>
+    $(function() {
+        $('#tgl').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+
+        tbl = $('#tbl').DataTable({
+            "ajax": {
+                url: "vsiswa",
+                type: "post",
+            },
+            destroy: true,
+            responsive: true,
+            "aLengthMenu": [
+                [10, 25, 50, 500, -1],
+                [10, 25, 50, 500, "All"]
+            ],
+            "iDisplayLength": 10,
+            "language": {
+                search: "",
+                searchPlaceholder: "Search Data"
+            },
+        });
+        document.querySelector('[data-kt-filemanager-table-filter="search"]').addEventListener("keyup",
+            (
+                function(t) {
+                    tbl.search(t.target.value).draw()
+                }));
+        $('#bsave').click(function(e) {
+            e.preventDefault();
+            var form = $('#form');
+            if (form[0].checkValidity() === false) {
+                form.addClass('was-validated');
+            } else {
+                form.removeClass('was-validated');
+                data = form.serialize();
+                tgl = $('#tgl').val().split("/");
+                data += "&tgl_lahir=" + tgl[2] + "-" + tgl[1] + "-" + tgl[0];
+                console.log(data);
+                Swal.fire({
+                    title: 'Please Wait!',
+                    icon: 'info',
+                    text: 'Loading.........',
+                    buttonsStyling: !1,
+                    confirmButtonText: "Selesai",
+                    customClass: {
+                        confirmButton: "btn btn-info"
+                    }
+                });
+                $.post('svsiswa', data, function(res) {
+                    Swal.close();
+                    if (res.success == 1) {
+                        pesan('success', res.message);
+                        tbl.ajax.reload(null, false);
+                        $('#modal').modal('hide');
+                    } else {
+                        pesan('error', res.message);
+                    }
+                }, 'json')
+            }
+        });
+
+        // import excel
+        $('#bimport').click(function(e) {
+            e.preventDefault();
+            var form = $('#fimport');
+            if (form[0].checkValidity() === false) {
+                form.addClass('was-validated');
+            } else {
+                form.removeClass('was-validated');
+                data = form.serializeArray();
+                var file_data = $("#file").prop("files")[0];
+                var form_data = new FormData();
+                file = file_data != undefined ? 1 : 0;
+                form_data.append("file", file_data)
+                form_data.append("file1", file)
+                console.log(data);
+                Swal.fire({
+                    title: 'Please Wait!',
+                    icon: 'info',
+                    text: 'Loading.........',
+                    buttonsStyling: !1,
+                    confirmButtonText: "Selesai",
+                    customClass: {
+                        confirmButton: "btn btn-info"
+                    }
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: 'impsiswa',
+                    data: form_data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        Swal.close();
+                        if (res == 1) {
+                            pesan('success', "Terkirim");
+                            tbl.ajax.reload(null, false);
+                            $('#mimport').modal('hide');
+                        } else {
+                            pesan('error', 'Failed');
+                        }
+                    },
+                    error: function(data) {
+                        console.log("error");
+                        console.log(data);
+                    }
+                }, 'json');
+            }
+        })
+    });
+
+    function add() {
+        $('#modal').modal('show');
+        $('#form')[0].reset();
+        $('#tgl').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+        }).datepicker('setDate', new Date())
+    }
+
+    function detail(id) {
+        $('#id').val(id)
+        $('#modal').modal('show');
+        $.post('dsiswa', {
+            'id': id
+        }, function(res) {
+            $('#nama').val(res.data[0].nama);
+            $('#tempat').val(res.data[0].tempat);
+            $('#tgl').val(res.data[0].tanggal);
+            $('#lembaga').val(res.data[0].lembaga);
+            $('#nomor').val(res.data[0].nomor);
+            $('#jurusan').val(res.data[0].jurusan);
+            $('#kelas').val(res.data[0].kelas);
+            $('#alamat').val(res.data[0].alamat);
+            if (res.data[0].gender == 'L') {
+                $("#pria").prop('checked', true);
+            } else {
+                $("#wanita").prop('checked', true);
+            }
+        }, 'json');
+    }
+
+    function hapus(id) {
+        Swal.fire({
+            title: "konfimasi?",
+            text: "Apakah mau menghapus data ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!"
+        }).then(function(result) {
+            if (result.value) {
+                $.post('hsiswa', {
+                    'id': id
+                }, function(res) {
+                    if (res.success == 1) {
+                        pesan('success', res.message);
+                        tbl.ajax.reload(null, false);
+                    } else {
+                        pesan('error', res.message)
+                    }
+                }, 'json')
+            }
+        });
+    }
+</script>
+
+{% endblock %}

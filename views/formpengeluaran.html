@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <link rel="stylesheet" href="{% static 'vendor/css/cores.css' %}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{% static 'vendor/css/theme-default.css' %}" class="template-customizer-theme-css" />
+    <style>
+        * {
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td style="width: 100px;">
+                <img src="static/logo.jpeg" height="100" alt="">
+            </td>
+            <td style="text-align: center;">
+                <b style="font-size: xxx-large;margin-left: -20px;">PONDOK PESANTREN NURUL JADID</b><br>
+                <b style="margin-top: -90px;font-size: x-large;">SEKOLAH MENENGAH KEJURUAN NURUL JADID</b><br>
+                <b style="margin-top: -90px;font-size: medium;">Jl. Kyai Haji Zaini Mun'im, Karanganyar, Paiton - Probolinggo, Telp. (0335) 774585</b>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table>
+        <tr>
+            <td style="width: 60;">Nomor</td>
+            <td style="width: 10;">:</td>
+            <td>...../SMK.NJ/{{romawi}}/{{tahun}}</td>
+        </tr>
+        <tr>
+            <td>Lampiran</td>
+            <td>:</td>
+            <td>1 Berkas</td>
+        </tr>
+        <tr>
+            <td>Hal</td>
+            <td>:</td>
+            <td>Pemberitahuan</td>
+        </tr>
+    </table>
+    <br><br>
+    <div>Kepada Yth.</div>
+    <div><b>Bapak/Ibu Orangtua/Wali Murid</b></div>
+    <div style="margin-left: 50px;">Di -</div>
+    <div style="margin-left: 100px;">Tempat</div><br>
+    <div style="margin-left: 50px;">Assalamualaikum Wr. Wb.</div><br>
+    <!--  -->
+
+    <div style="margin-left: 50px;">Salam teriring doa kami panjatkan semoga segala aktifitas yang Bapak/Ibu berada dalam lindungan dan Maghfiroh Allah SWT. Amin...</div>
+    <div style="margin-left: 50px;">Sehubungan dengan tindak lanjut mengenai peraturan tata tertib siswa, bahwa putra/i Bapak/Ibu :</div><br>
+    <!--  -->
+
+    {% for v in siswa%}
+    <table style="margin-left: 50px;">
+        <tr>
+            <td style="width: 60;">Nama</td>
+            <td style="width: 10;">:</td>
+            <td>{{v.nama_lengkap}}</td>
+        </tr>
+        <tr>
+            <td>Kelas</td>
+            <td>:</td>
+            <td>Kelas {{v.kelas}}</td>
+        </tr>
+        <tr>
+            <td>Jurusan</td>
+            <td>:</td>
+            <td>{{v.jurusan}}</td>
+        </tr>
+        <tr>
+            <td>Alamat</td>
+            <td>:</td>
+            <td>{{v.alamat|capfirst}}</td>
+        </tr>
+    </table>
+    {%endfor%}
+    <br>
+    <div style="margin-left: 50px;">Telah dijatuhi hukuman disiplin tingkat berat berdasarkan keputusan Komite Disiplin dan Tata Tertib. Untuk itu maka siswa yang bersangkutan dihilangkan hak dan kewajibannya selaku siswa SMK Nurul Jadid Paiton Probolinggo sejak hari {{tgl}}.
+    </div>
+    <div style="margin-left: 50px;">Demikian Surat Pemberitahuan ini kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terimakasih.</div><br>
+    <div style="margin-left: 50px;">Wassalamu’alaikum Wr.Wb</div><br>
+    <div style="margin-left: 450px;">Probolinggo, {{tgl1}}</div>
+    <div style="margin-left: 450px;">Kepala Madrasah</div><br><br><br><br>
+    <div style="margin-left: 450px;">..........................................</div>
+</body>
+
+</html>

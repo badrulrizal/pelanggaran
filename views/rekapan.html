@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+<!--  -->
+{% block content %}
+<h3>Data Rekapan Pelanggaran</h3>
+<hr>
+<form action="export_laporan" method="post">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="fv-row mb-3">
+                <!--begin::Email-->
+                <label class="required fw-semibold fs-6 mb-2">Kategori Rekapan</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="radio" name="kategori" value="0" id="individu" checked="checked" />
+                            <label class="form-check-label" for="flexCheckChecked">
+                        Persiswa 
+                    </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="radio" name="kategori" value="1" id="kelompok" />
+                            <label class="form-check-label" for="flexCheckChecked">
+                        Keseluruhan
+                    </label>
+                        </div>
+
+                    </div>
+                </div>
+                <!--end::Email-->
+            </div>
+        </div>
+        <div class="col-md-3" id="divsiswa">
+            <div class="fv-row mb-3">
+                <!--begin::Email-->
+                <label class="required fw-semibold fs-6 mb-2">Siswa</label>
+                <select name="siswa" id="siswa" class="form-control" style="width: 100%;">
+                    <option value=""></option>
+                </select>
+                <!--end::Email-->
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="fv-row mb-3">
+                <!--begin::Email-->
+                <label class="required fw-semibold fs-6 mb-2">Tanggal Rekapan</label>
+                <input type="text" placeholder="Nama Pelanggaran" name="tgl" id="tgl" class="form-control border" required/>
+                <!--end::Email-->
+            </div>
+        </div>
+        <div class="col-md-2" style="padding-top: 30px;">
+            <button type="submit" class="btn btn-primary"><i class='bx bx-printer'></i> Cetak Rekapan</button>
+        </div>
+    </div>
+</form>
+<hr>
+<input type="text" data-kt-filemanager-table-filter="search" class="form-control border ps-15" style="width: 250px;right: 0;position: absolute;margin-right: 20px;" placeholder="Search Data" />
+<br><br>
+<div class="table-responsive text-nowrap">
+    <table class="table" id="tbl">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>No.Induk Siswa</th>
+                <th>Nama Siswa</th>
+                <th>Kelas</th>
+                <th>Pelanggaran</th>
+                <th>Point</th>
+                <th>Status Pelanggaran</th>
+                <th>Total Point Pelanggaran</th>
+                <th>Tindakan</th>
+                <th>Tanggal Melanggar</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<!--  -->
+<!--  -->
+<script>
+    $(function() {
+        $('#siswa').select2({
+            placeholder: 'All Siswa',
+        });
+        listsiswa();
+        $('#tgl').datepicker({
+            format: 'yyyy-mm',
+            autoclose: true,
+            startView: "months",
+            minViewMode: "months",
+            orientation: 'bottom'
+        }).datepicker('setDate', new Date())
+
+        tbl = $('#tbl').DataTable({
+            "ajax": {
+                url: "vrekapan",
+                type: "post",
+            },
+            destroy: true,
+            responsive: true,
+            "aLengthMenu": [
+                [10, 25, 50, 500, -1],
+                [10, 25, 50, 500, "All"]
+            ],
+            "iDisplayLength": 10,
+            "language": {
+                search: "",
+                searchPlaceholder: "Search Data"
+            },
+        });
+        document.querySelector('[data-kt-filemanager-table-filter="search"]').addEventListener("keyup",
+            (
+                function(t) {
+                    tbl.search(t.target.value).draw()
+                }));
+        $('#individu').click(function() {
+            listsiswa();
+        })
+        $('#kelompok').click(function() {
+            $("#siswa").empty().trigger('change')
+        })
+    });
+
+    function add() {
+        $('#modal').modal('show');
+    }
+
+    function listsiswa() {
+        $.get('listsiswa', function(res) {
+            $('#siswa').html(res)
+        })
+    }
+</script>
+
+{% endblock %}
